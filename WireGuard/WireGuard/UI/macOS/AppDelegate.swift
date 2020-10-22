@@ -29,13 +29,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         Logger.configureGlobal(tagged: "APP", withFilePath: FileManager.logFileURL?.path)
         registerLoginItem(shouldLaunchAtLogin: true)
 
-        var isLaunchedAtLogin = false
-        if let appleEvent = NSAppleEventManager.shared().currentAppleEvent {
-            isLaunchedAtLogin = LaunchedAtLoginDetector.isLaunchedAtLogin(openAppleEvent: appleEvent)
-        }
+        let isOpenHidden = NSApp.isHidden
 
         NSApp.mainMenu = MainMenu()
-        setDockIconAndMainMenuVisibility(isVisible: !isLaunchedAtLogin)
+        setDockIconAndMainMenuVisibility(isVisible: !isOpenHidden)
 
         TunnelsManager.create { [weak self] result in
             guard let self = self else { return }
@@ -58,7 +55,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self.tunnelsTracker = tunnelsTracker
                 self.statusItemController = statusItemController
 
-                if !isLaunchedAtLogin {
+                if !isOpenHidden {
                     self.showManageTunnelsWindow(completion: nil)
                 }
             }

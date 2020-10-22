@@ -13,8 +13,9 @@ int main(int argc, char *argv[])
 
     if (@available(macOS 10.15, *)) {
         NSURL *appURL = [NSWorkspace.sharedWorkspace URLForApplicationWithBundleIdentifier:appId];
-        NSWorkspaceOpenConfiguration *openConfiguration = [[NSWorkspaceOpenConfiguration alloc] init];
+        NSWorkspaceOpenConfiguration *openConfiguration = [NSWorkspaceOpenConfiguration configuration];
         openConfiguration.activates = NO;
+        openConfiguration.hides = YES;
         openConfiguration.appleEvent = paramDescriptor;
 
         // Create condition to block the execution until `openApplicationAtURL:configuration:completionHandler:`
@@ -25,8 +26,10 @@ int main(int argc, char *argv[])
         }];
         [condition wait];
     } else {
-        [NSWorkspace.sharedWorkspace launchAppWithBundleIdentifier:appId options:NSWorkspaceLaunchWithoutActivation
-                                    additionalEventParamDescriptor:paramDescriptor launchIdentifier:nil];
+        [NSWorkspace.sharedWorkspace launchAppWithBundleIdentifier:appId
+                                                           options:NSWorkspaceLaunchWithoutActivation | NSWorkspaceLaunchAndHide
+                                    additionalEventParamDescriptor:paramDescriptor
+                                                  launchIdentifier:nil];
     }
 
     return 0;
